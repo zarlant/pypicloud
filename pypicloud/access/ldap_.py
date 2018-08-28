@@ -79,6 +79,8 @@ class LDAP(object):
                     "and user_search_filter"
                 )
         self._admin_field = admin_field
+        if not isinstance(admin_value, list):
+            admin_value = [admin_value]
         self._admin_value = set(admin_value)
         self._server = None
         if cache_time is not None:
@@ -149,7 +151,11 @@ class LDAP(object):
 
         is_admin = False
         if self._admin_field is not None:
-            LOG.debug("Checking if {} contains: {}".format(self._admin_field, self._admin_value))
+            LOG.debug(
+                "Checking if {} contains: {}".format(
+                    self._admin_field, self._admin_value
+                )
+            )
             if self._admin_field in attributes:
                 is_admin = (
                     len(
@@ -215,7 +221,7 @@ class LDAPAccessBackend(IAccessBackend):
         kwargs = super(LDAPAccessBackend, cls).configure(settings)
         conn = LDAP(
             admin_field=settings.get("auth.ldap.admin_field"),
-            admin_value=aslist(settings.get("auth.ldap.admin_value", [])),
+            admin_value=settings.get("auth.ldap.admin_value", ""),
             base_dn=settings.get("auth.ldap.base_dn"),
             cache_time=settings.get("auth.ldap.cache_time"),
             service_dn=settings.get("auth.ldap.service_dn"),
