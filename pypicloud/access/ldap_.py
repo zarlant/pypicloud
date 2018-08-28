@@ -149,6 +149,7 @@ class LDAP(object):
 
         is_admin = False
         if self._admin_field is not None:
+            LOG.debug("Checking if {} contains: {}".format(self._admin_field, self._admin_value))
             if self._admin_field in attributes:
                 is_admin = (
                     len(
@@ -161,7 +162,7 @@ class LDAP(object):
                     )
                     > 0
                 )
-
+        LOG.debug("User: {}. DN: {}. Admin: {}".format(username, dn, is_admin))
         return User(username, dn, is_admin)
 
     def _decode_attribute(self, attribute):
